@@ -6,22 +6,16 @@ void setup(){
 
 void loop(){
   // Start
-  delay(1000);
+  delay(3000);
   digitalWrite(ledPin, HIGH);
 
   // Exploit
-  LinuxPayload();
+  //LinuxPayload();
+  WindowsPayload();
 
   // End
   digitalWrite(ledPin, LOW);
   delay(15000); // Long delay between runs
-}
-
-void goDirection(int *sx, int *sy, int *x, int *y){
-  for(int i = sx; i<x; i++){
-    Mouse.move(i, 2);
-    delay(25);
-  }
 }
 
 // Specific functions
@@ -29,12 +23,44 @@ void LinuxPayload(){
   GnomeKDECommandRun("xterm");
   delay(1500);
   KeyCombo(MODIFIERKEY_ALT,KEY_F7);
-  int i;
-  for (i=0; i<900; i++){
-    Mouse.move(2, 2);
-    delay(25);
-  }
+  moveWindow();
+
   Mouse.click();
+}
+
+void WindowsPayload(){
+  WindowsCommandRun("explorer.exe");
+  delay(1500);
+  // Alt + Space + L
+  KeyCombo(MODIFIERKEY_ALT,KEY_SPACE);
+  delay(100);
+  KeyPress(KEY_L);
+  delay(100);
+  // Click and Drag
+  Mouse.set_buttons(1, 0, 0);
+  moveWindow();
+
+  Mouse.set_buttons(0, 0, 0);
+}
+
+void moveWindow(){
+  int d = 0;
+  int m = 80;
+  int i;
+  while(true){
+    for (i=0; i<m; i++){
+      Mouse.move(2, 2);
+      delay(d);
+    }
+    for (i=0; i<m; i++){
+      Mouse.move(-4, 1);
+      delay(d);
+    }
+    for (i=0; i<m; i++){
+      Mouse.move(2, -3);
+      delay(d);
+    }
+  }
 }
 
 // Utility functions
@@ -56,8 +82,8 @@ void AppleCommandRun(char *SomeCommand){
   KeyCombo(MODIFIERKEY_GUI,KEY_SPACE); // "apple" aka command key, space key -- open spotlight
   delay(1500);
   Keyboard.print("Terminal.app");
-  delay(1000);xterm
-  
+  delay(1000);
+
   KeyPress(KEY_ENTER);
   delay(1500);
   Keyboard.print(SomeCommand);
@@ -79,4 +105,11 @@ void KeyCombo(int ModKey,int SomeKey) {
   Keyboard.set_key1(0);
   Keyboard.send_now();
 }
+
+
+
+
+
+
+
 
