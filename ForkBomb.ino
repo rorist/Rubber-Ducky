@@ -13,7 +13,7 @@ void setup(){
 }
 
 void loop(){
-  if (digitalRead(swLinux) == HIGH){
+  if (digitalRead(swLinux)){
     LinuxPayload();
   } 
   else if(digitalRead(swWindows)){
